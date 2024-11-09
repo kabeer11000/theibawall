@@ -1,7 +1,7 @@
 import type { CSSProperties, FC, ReactNode } from 'react'
 import { useDrag } from 'react-dnd'
 
-import { ItemTypes } from './ItemTypes'
+import { ItemTypes } from './itemType'
 
 const style: CSSProperties = {
   position: 'absolute',
@@ -12,7 +12,7 @@ const style: CSSProperties = {
 }
 
 export interface BoxProps {
-  id: any
+  id: unknown
   left: number
   top: number
   hideSourceOnDrag?: boolean
