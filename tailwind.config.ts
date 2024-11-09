@@ -12,6 +12,16 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      animation: {
+        'float-up': 'floatUp 10s linear infinite',
+      },
+      keyframes: {
+        floatUp: {
+          '0%': { transform: 'translateY(100vh)', opacity: '0' },
+          '10%': { opacity: '1' },
+          '100%': { transform: 'translateY(-100vh)', opacity: '1' },
+        },
+      },
     },
   },
   plugins: [],
