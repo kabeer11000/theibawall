@@ -1,0 +1,102 @@
+[debug] [2024-10-31T11:25:35.796Z] ----------------------------------------------------------------------
+[debug] [2024-10-31T11:25:35.804Z] Command:       /usr/local/Cellar/node/22.4.0/bin/node /usr/local/bin/firebase deploy
+[debug] [2024-10-31T11:25:35.804Z] CLI Version:   13.15.1
+[debug] [2024-10-31T11:25:35.805Z] Platform:      darwin
+[debug] [2024-10-31T11:25:35.805Z] Node Version:  v22.4.0
+[debug] [2024-10-31T11:25:35.805Z] Time:          Thu Oct 31 2024 16:25:35 GMT+0500 (Pakistan Standard Time)
+[debug] [2024-10-31T11:25:35.805Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-10-31T11:25:35.958Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-10-31T11:25:35.960Z] > authorizing via signed-in user (kabeer11000@gmail.com)
+[debug] [2024-10-31T11:25:35.961Z] [iam] checking project theibawall for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2024-10-31T11:25:35.963Z] > refreshing access token with scopes: []
+[debug] [2024-10-31T11:25:35.969Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-10-31T11:25:35.969Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-10-31T11:25:36.588Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-10-31T11:25:36.588Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-10-31T11:25:36.623Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/theibawall:testIamPermissions [none]
+[debug] [2024-10-31T11:25:36.623Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/theibawall:testIamPermissions x-goog-quota-user=projects/theibawall
+[debug] [2024-10-31T11:25:36.624Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/theibawall:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-10-31T11:25:38.674Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/theibawall:testIamPermissions 200
+[debug] [2024-10-31T11:25:38.675Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/theibawall:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-10-31T11:25:38.675Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/theibawall [none]
+[debug] [2024-10-31T11:25:39.329Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/theibawall 200
+[debug] [2024-10-31T11:25:39.329Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/theibawall {"projectId":"theibawall","projectNumber":"959275083143","displayName":"iba-wall","name":"projects/theibawall","resources":{"hostingSite":"theibawall"},"state":"ACTIVE","etag":"1_25a22f92-11f5-4e50-ac7e-359e8892a953"}
+[debug] [2024-10-31T11:25:42.374Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites pageToken=&pageSize=10
+[debug] [2024-10-31T11:25:44.965Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites 200
+[debug] [2024-10-31T11:25:44.966Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites {"sites":[{"name":"projects/theibawall/sites/theibawall","defaultUrl":"https://theibawall.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2024-10-31T11:25:44.967Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites 
+[debug] [2024-10-31T11:25:45.634Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites 200
+[debug] [2024-10-31T11:25:45.634Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites {"sites":[{"name":"projects/theibawall/sites/theibawall","defaultUrl":"https://theibawall.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2024-10-31T11:25:45.634Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/theibawall/webApps/-/config [none]
+[debug] [2024-10-31T11:25:46.379Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/theibawall/webApps/-/config 200
+[debug] [2024-10-31T11:25:46.379Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/theibawall/webApps/-/config {"projectId":"theibawall","storageBucket":"theibawall.appspot.com","apiKey":"AIzaSyCKKcUfAo7gyfUBNoLloHVj3Oez9lXG-Yk","authDomain":"theibawall.firebaseapp.com","messagingSenderId":"959275083143"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 14.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2024-10-31T11:25:53.457Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall [none]
+[debug] [2024-10-31T11:25:57.153Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall 200
+[debug] [2024-10-31T11:25:57.153Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall {"name":"projects/theibawall/sites/theibawall","defaultUrl":"https://theibawall.web.app","type":"DEFAULT_SITE"}
+[info]   ▲ Next.js 15.0.1
+
+[info] 
+
+[info]    Linting and checking validity of types ...
+
+[info]    Creating an optimized production build ...
+
+[info]  ✓ Compiled successfully
+
+[info]    Collecting page data ...
+
+[info]    Generating static pages (0/3) ...
+
+[info]  ✓ Generating static pages (3/3)
+
+[info]    Finalizing page optimization ...
+
+[info]    Collecting build traces ...
+
+[info] 
+
+[info] Route (pages)                             Size     First Load JS
+┌ ○ /                                     5.12 kB        96.3 kB
+├   └ css/aa2c73bdefbb8864.css            346 B
+├   /_app                                 0 B            91.2 kB
+├ ○ /404                                  189 B          91.4 kB
+└ ƒ /api/hello                            0 B            91.2 kB
++ First Load JS shared by all             93.7 kB
+  ├ chunks/framework-516982be4eea35ea.js  57.4 kB
+  ├ chunks/main-6292f927cd63e2cb.js       32.8 kB
+  └ other shared chunks (total)           3.52 kB
+
+
+[info] ○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+[info] Building a Cloud Function to run this application. This is needed due to:
+[info]  • Image Optimization
+[info]  • non-static route /api/hello
+[info] 
+[debug] [2024-10-31T11:26:24.172Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall [none]
+[debug] [2024-10-31T11:26:25.613Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall 200
+[debug] [2024-10-31T11:26:25.613Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/theibawall/sites/theibawall {"name":"projects/theibawall/sites/theibawall","defaultUrl":"https://theibawall.web.app","type":"DEFAULT_SITE"}
+[warn] ⚠  This integration expects Node version 16, 18, or 20. You're running version 22, problems may be encountered. 
+[debug] [2024-10-31T11:27:13.384Z] Error: Command failed: npm i --omit dev --no-audit
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:889:11)
+    at execSync (node:child_process:961:15)
+    at prepareFrameworks (/Users/0x/.config/yarn/global/node_modules/firebase-tools/lib/frameworks/index.js:371:42)
+    at async deploy (/Users/0x/.config/yarn/global/node_modules/firebase-tools/lib/deploy/index.js:57:13)
+[error] 
+[error] Error: An unexpected error has occurred.

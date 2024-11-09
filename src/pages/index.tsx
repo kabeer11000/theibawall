@@ -1,5 +1,10 @@
-import Image from "next/image";
+import { useState, useEffect } from 'react';
 import localFont from "next/font/local";
+import { auth, provider } from "../../firebaseconfig";
+import raw_images from "@/sample-images.json";
+import { useModal } from "@/hooks/useModal";
+import Modal from "@/components/Dialog";
+import { signInWithPopup } from "firebase/auth";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -12,104 +17,108 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+// Helper Component for Image Item
+const ImageItem = ({ src, index }: { src: string, index: number }) => (
+  <div key={index} className="mb-4 group bg-white w-full rounded-lg break-inside-avoid">
+    {/* Background overlay that appears when hovering over any image */}
+    <div className="absolute top-0 left-0 w-full h-full bg-white opacity-0 z-100 transition-opacity duration-300 pointer-events-none md:lg:group-hover:opacity-90 group-hover:duration-300"></div>
+    <div className="z-0- md:lg:group-hover:z-[200] grid grid-cols-1 md:lg:group-hover:scale-125 transition-transform duration-300">
+      <img
+        src={src}
+        alt={`Image ${index + 1}`}
+        className="w-full h-auto bg-neutral-100 rounded-lg object-cover"
+      />
+      <div className="flex justify-between">
+        <p className="text-lg">@kabeerjaffri</p>
+        <p className="text-sm text-neutral-500">— 2 hours ago</p>
+      </div>
     </div>
+  </div>
+);
+
+// Helper Component for Placeholder Item
+const PlaceholderItem = ({ index }: { index: number }) => (
+  <div
+    key={index}
+    style={{ height: 5 * (Math.floor(10 * Math.random()) || 1) + "rem" }}
+    className="mb-4 group flex justify-center content-center bg-neutral-200 w-full rounded-lg break-inside-avoid"
+  >
+    <h1 className="text-xl text-center my-auto mx-auto">?</h1>
+  </div>
+);
+
+export default function Home() {
+  const images = raw_images.map(i => i.urls.regular).slice(0, 20);
+  // const [user, setUser] = useState(null);
+  // const [userPhoto, setUserPhoto] = useState(null);
+  const { open, openModal, closeModal } = useModal();
+
+  const handleConfirm = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Set user info in state
+      // setUser(user);
+      // setUserPhoto(user.photoURL);
+
+      alert('Signed in as: ' + (user.displayName ?? ""));
+    } catch (error) {
+      alert("Error signing in: " + error);
+      alert("Something went wrong, please try again.");
+    }
+  };
+
+  return (
+    <>
+      <Modal
+        isOpen={open}
+        onClose={closeModal}
+        title="Join the IBA Wall!"
+        description="We'd love to feature your photo, but first, sign in to add to the wall."
+        confirmText="🚀 Sign in with Google"
+        cancelText="Maybe Later"
+        onConfirm={handleConfirm} />
+
+
+        {/* User Profile Photo in the Top Right
+        {user && (
+          <div className="fixed top-4 right-4 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-transparent via-white to-transparent shadow-lg cursor-pointer transition-all ease-in-out duration-300 hover:scale-105">
+            <img
+              src={userPhoto}
+              alt="User Profile"
+              className="w-full h-full object-cover rounded-full border-2 border-white"
+            />
+          </div>
+        )} */}
+      <div
+        className={`${geistSans.variable} overflow-y-scroll md:lg:overflow-hidden min-h-[100vh] relative ${geistMono.variable} p-2 columns-2 gap-y-0 md:columns-4 lg:columns-6 xl:columns-7 gap-2 mb-[5rem] md:lg:p-2 md:lg:gap-2`}
+      >
+        {images.map((src, index) => (
+          <ImageItem key={index} src={src} index={index} />
+        ))}
+        {[...new Array(2)].map(index => (
+          <PlaceholderItem key={index} index={index} />
+        ))}
+
+        {/* Fixed Footer and Profile Photo */}
+        <div className="fixed flex content-center justify-between right-0 z-20 w-screen bottom-[0rem] px-2 py-2 pb-[1rem] h-[5rem]" style={{ background: 'linear-gradient(to top,white, white, transparent)' }}>
+          <div className="flex content-center">
+            <button onClick={openModal} className="h-auto my-auto relative inline-flex items-center justify-center p-0.5 mb-2-me-2 overflow-hidden text-md font-large text-black rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white focus:ring-4 focus:outline-none focus:ring-pink-200">
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+                <strong>Add your photo</strong>
+              </span>
+            </button>
+          </div>
+          <div className="ml-auto max-w-[10rem]">
+            <img src="/the-wall.svg" className="w-[10rem] h-auto"/>
+            <div className='mt-[-0.5rem] text-neutral-500 flex w-full justify-between'>
+              <a href='#'>Report</a>
+              <a href='#'>Instagram</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
