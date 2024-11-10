@@ -84,7 +84,7 @@ export default function Home() {
         className={`overflow-y-scroll md:lg:overflow-hidden min-h-[100vh] relative p-2 ${mobileGrid ? 'columns-1' : 'columns-2'} gap-y-8 pt-4 md:columns-4 lg:columns-5 xl:columns-6 gap-2 mb-[5rem] md:lg:p-2 md:lg:gap-2`}
       >
         {images.map((src, index) => (
-          <Image alt={src} key={src} src={src} index={index} />
+          <Image key={src} src={src} index={index} />
         ))}
         <PlaceholderItem index={0} />
         <PlaceholderItem index={1} />

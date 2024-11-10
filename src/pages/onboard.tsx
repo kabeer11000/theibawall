@@ -79,7 +79,7 @@ export default function Onboard() {
 
     return (
         <div className="container mx-auto py-0">
-            <div className="top-0 sticky mx-auto w-full max-w-6xl bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
+            <div className="top-0 z-50 border-b md:lg:border-none sticky mx-auto w-full max-w-6xl bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
                 <button onClick={() => {
                     if (imagePreview) {
                         enqueueSnackbar('What should we do with the photo attached?', {
@@ -119,13 +119,14 @@ export default function Onboard() {
                 </div> */}
                 <div className='pt-2 ml-8'><p className='text-lg'>Add to The Wall</p></div>
             </div>
-            <div className="mx-auto max-w-6xl bg-white p-4 py-0 rounded-lg shadow-md- grid  gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-12">
+            <div className="mx-auto mt-4 max-w-6xl bg-white p-4 py-0 rounded-lg shadow-md- grid  gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-12">
 
                 {/* File Upload Section */}
                 <div className="lg:col-span-4 absolute-mb-[60vh] md:lg:static">
                     {/* <label htmlFor="cover-photo" className="block text-md font-medium text-gray-900">
                         Cover photo
                     </label> */}
+                    <div className='mx-auto flex w-full justify-center md:lg:block'>
                     <div
                         className={`relative hover:shadow-lg transform transition-all hover:duration-400 duration-400 animate-squeezeInterval- -[squeeze_0.5s_ease-in-out_infinite_5s] -delay-[5s] mt-2 flex overflow-hidden justify-center rounded-xl border ${isDragging ? 'border-indigo-600 bg-indigo-100' : 'border-gray-300 bg-neutral-100'} transition-colors`}
                         onDrop={handleDrop}
@@ -133,9 +134,9 @@ export default function Onboard() {
                         onDragLeave={handleDragLeave}
                     >
                         {imagePreview ? (
-                            <div className="">
+                            <div className="mx-auto">
                                 <div className="rounded-lg">
-                                    <img src={imagePreview} className="max-h-[60vh] h-auto w-full bg-blend-darken" alt="Preview" />
+                                    <img src={imagePreview} className="max-h-[40vh] md:lg:max-h-[60vh] h-full w-auto md:lg:h-auto md:lg:w-full bg-blend-darken" alt="Preview" />
                                 </div>
                                 <div className="absolute top-0 right-0 p-4 flex justify-end">
                                     <button onClick={removeFile} className="relative h-8 overflow-hidden rounded-full px-5-py-2.5 text-neutral-500 transition-all duration-300 hover:bg-red-800 hover:text-white hover:ring-2 hover:ring-red-800 hover:ring-offset-2">
@@ -159,7 +160,7 @@ export default function Onboard() {
                                             <input
                                                 id="file-upload"
                                                 name="file-upload"
-                                                type="file"
+                                                type="file" accept='image/*'
                                                 className="sr-only"
                                                 onChange={handleFileChange}
                                             />
@@ -167,10 +168,11 @@ export default function Onboard() {
                                         <p className="inline text-md"> or drag and drop</p>
                                     </div>
                                 </div>
-                                <p className="text-md text-neutral-600 mt-[12rem] border-t pt-4">We recommend PNG, JPG, GIF up to 10MB</p>
+                                <p className="text-sm text-neutral-400 mt-[12rem] border-t pt-4">We recommend PNG, JPG, GIF up to 10MB</p>
                             </div>
                         )}
                     </div>
+                </div>
                 </div>
 
                 {/* Form Section */}
@@ -180,7 +182,7 @@ export default function Onboard() {
                         Locked
                     </div> */}
                     <div className="sm:col-span-4">
-                        <label htmlFor="username" className="block text-xl mb-4 text-black">
+                        <label htmlFor="description" className="block text-md mb-4 text-black">
                             Description
                         </label>
                         <div className="mt-2">
@@ -196,16 +198,27 @@ export default function Onboard() {
                                 />
                             </div>
                         </div>
-
+                        <label htmlFor="link" className="mt-8 block text-md mb-4 text-black">
+                            Link
+                        </label>
                         <div className="mt-2">
-                            <div className="flex border mt-4 rounded-md shadow-sm ring-1-ring-inset -ring-gray-300 -focus-within:ring-2 -focus-within:ring-inset -focus-within:ring-black">
-                                <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">Posting as @{user ? user?.email?.split('@')[0] : '...'}</span>
+                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
+                                {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">workcation.com/</span> */}
+                                <input
+                                    id="link" required
+                                    name="link" placeholder='https://supercoolwebsite.com' type='text'
+                                    autoComplete="username"
+                                    className="block flex-1 w-full border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
+                                    disabled={!file}
+                                />
+                            </div>
+                        </div>
+                        <div className="my-4">
+                            <div className="flex mt-4 rounded-md -shadow-sm ring-1-ring-inset -ring-gray-300 -focus-within:ring-2 -focus-within:ring-inset -focus-within:ring-black">
+                                <span className="flex select-none items-center -pl-3 text-black sm:text-md">Posting as{' '}<strong className='ml-2'>@{user ? user?.email?.split('@')[0] : '...'}</strong></span>
                             </div>
                         </div>
                     </div>
-                    <p className="mt-4 text-md mb-[5rem] text-neutral-400">
-                        We'll always let you know about important changes, but you pick what else you want to hear about.
-                    </p>
 
                     <p className="mt-4 text-md flex content-center align-middle justify-start mb-[5rem] text-black">
                         <ClockIcon className='w-8 h-8 mr-4' /> <span>Photo's people add to The Wall stay up for 20 hours.</span>
