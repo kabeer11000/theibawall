@@ -6,7 +6,7 @@ import { useDrop } from 'react-dnd'
 
 import { Box } from './Box'
 import type { DragItem } from './interfaces'
-import { ItemTypes } from './ItemTypes'
+import { ItemTypes } from './itemType'
 
 const styles: CSSProperties = {
   width: 300,

@@ -1,10 +1,8 @@
-// Modal.js
-
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-
-export default function Modal({ isOpen, onClose, title, description, confirmText, cancelText, onConfirm }) {
+export interface IModalProps { isOpen: boolean, onClose: () => unknown, title: string, description: string, confirmText: string, cancelText: string, onConfirm: () => unknown }
+export default function Modal({ isOpen, onClose, title, description, confirmText, cancelText, onConfirm }: IModalProps) {
   return (
-    <Dialog  open={isOpen} onClose={onClose} className="relative z-90">
+    <Dialog open={isOpen} onClose={onClose} className="relative z-90">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-white bg-opacity-80 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"

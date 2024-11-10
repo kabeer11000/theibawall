@@ -4,7 +4,7 @@ import crypto from "crypto";
 const SECRET_KEY = process.env.cloud_token_key;
 
 // Generate token with a TTL (in seconds)
-function generateToken(userId, ttl = 3600) {
+function generateToken(userId: string, ttl = 3600) {
     const timestamp = Math.floor(Date.now() / 1000);  // Current time in seconds
     const payload = `${userId}:${timestamp}`;
 
