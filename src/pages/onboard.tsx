@@ -2,6 +2,8 @@ import Image from '@/components/Image';
 import { auth } from '@/firebase-config';
 import { ArrowLeftIcon, ArrowUpCircleIcon, ClockIcon, FaceFrownIcon, UserCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { PhotoIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 const descriptions = [
@@ -32,6 +34,8 @@ export default function Onboard() {
     const [imagePreview, setImagePreview] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [user] = useAuthState(auth);
+    const router = useRouter();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const handleFileChange = (e) => {
         const uploadedFile = e.target.files[0];
@@ -63,6 +67,7 @@ export default function Onboard() {
     };
 
     const removeFile = () => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
         setFile(null);
         setImagePreview(null);
     };
@@ -75,7 +80,29 @@ export default function Onboard() {
     return (
         <div className="container mx-auto py-0">
             <div className="top-0 sticky mx-auto w-full max-w-6xl bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
-                <button className="group relative inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border font-medium text-neutral-950 transition-all duration-300 md:lg:hover:w-32">
+                <button onClick={() => {
+                    if (imagePreview) {
+                        enqueueSnackbar('What should we do with the photo attached?', {
+                            action: (snackbarId) => <>
+                                <button className='p-2 bg-red-800 rounded-md' onClick={() => {
+                                    router.push('/');
+                                    closeSnackbar(snackbarId);
+                                    removeFile();
+                                }}>
+                                    Discard
+                                </button>
+                                <button className='ml-4 p-2' onClick={() => { closeSnackbar(snackbarId) }}>
+                                    Cancel
+                                </button>
+                            </>,
+                            persist: true,
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left'
+                            }
+                        });
+                    } else router.push('/')
+                }} className="group relative inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border font-medium text-neutral-950 transition-all duration-300 md:lg:hover:w-32">
                     <div className="hidden md:lg:inline-flex md text-black whitespace-nowrap opacity-0 transition-all duration-200 group-hover:-translate-x-[-10px] group-hover:opacity-100">
                         Go Back
                     </div>
@@ -181,7 +208,7 @@ export default function Onboard() {
                     </p>
 
                     <p className="mt-4 text-md flex content-center align-middle justify-start mb-[5rem] text-black">
-                        <ClockIcon className='w-8 h-8 mr-4'/> <span>Photo's people add to The Wall stay up for 20 hours.</span>
+                        <ClockIcon className='w-8 h-8 mr-4' /> <span>Photo's people add to The Wall stay up for 20 hours.</span>
                     </p>
 
                     <div className="mt-6 border-t md:lg:border-none flex fixed left-0 bottom-0 w-screen px-4 py-2 md:lg:relative md:lg:w-full md:lg:p-0 bg-white items-center justify-end gap-x-6">
