@@ -1,31 +1,10 @@
 import { auth } from '@/firebase-config';
+import descriptions from '@/utils/descriptions';
 import { ArrowLeftIcon, ArrowUpCircleIcon, ClockIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-const descriptions = [
-    "Your turn to add something stunning!",
-    "Time to make your mark—upload your image and let’s see what kind of masterpiece you’ve got!",
-    "Who needs perfection? Just upload and let the magic happen!",
-    "It’s your turn to shine! Drop that image and let us bask in your brilliance!",
-    "We’re not judging, promise. But, seriously, your photo will totally make us jealous.",
-    "You’ve got the idea. We’ve got the wall. Let’s make some Pinterest magic happen!",
-    "This wall’s looking a little bare, don’t you think? Add your image and let’s spice things up!",
-    "Your wall is calling for an upgrade. Go ahead, make it pop with your creativity!",
-    "We’re wide open and waiting for your next masterpiece. What are you going to upload?",
-    "The wall is ready, but are *you* ready to leave your mark?",
-    "It’s not just any image—it’s *your* image! Bring it to the wall and let’s get inspired!",
-    "You didn’t think we were going to leave this wall empty, did you? Upload and show us what you’ve got!",
-    "Don’t just sit there—upload that photo and let’s give this wall some personality!",
-    "Are you ready to make history? Upload your image and claim your spot on the wall!",
-    "We promise no one will judge your photo (okay, maybe a little)—just upload and let’s get started!",
-    "This wall's looking for something special. Got a photo? We’ve got a place for it!",
-    "Here’s your chance to make the wall *yours*. Upload something epic!",
-    "You’ve got the vision, we’ve got the space. Let’s see what you’ve got!",
-    "Come on, we know you’ve got a picture that’ll make us all stop scrolling. Upload it!",
-    "Think of this wall as a canvas. Your image is the brushstroke. Let’s get creative!"
-];
 
 export default function Onboard() {
     const [file, setFile] = useState<null | File>(null);
@@ -73,13 +52,18 @@ export default function Onboard() {
         setFile(null);
         setImagePreview(null);
     };
+    const [location, setLocation] = useState<null | string>(null);
 
     // Use useMemo to memoize the random description
     const description = useMemo<string>(() => {
         const randomIndex = Math.floor(Math.random() * descriptions.length);
         return descriptions[randomIndex];
     }, []); // Empty dependency array ensures this is calculated only once
-
+    useEffect(() => {
+        if (navigator.geolocation) navigator.geolocation.getCurrentPosition((position) => {
+            setLocation(position.coords.latitude + ', ' + position.coords.longitude)
+        })
+    }, [])
     return (
         <div className="container mx-auto py-0">
             <div className="top-0 z-50 border-b md:lg:border-none sticky mx-auto w-full max-w-6xl bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
@@ -87,14 +71,14 @@ export default function Onboard() {
                     if (imagePreview) {
                         enqueueSnackbar('What should we do with the photo attached?', {
                             action: (snackbarId) => <>
-                                <button className='p-2 bg-red-800 rounded-md' onClick={() => {
+                                <button className='p-4 bg-red-800 rounded-2xl' onClick={() => {
                                     router.push('/');
                                     closeSnackbar(snackbarId);
                                     removeFile();
                                 }}>
                                     Discard
                                 </button>
-                                <button className='ml-4 p-2' onClick={() => { closeSnackbar(snackbarId) }}>
+                                <button className='ml-4 p-4' onClick={() => { closeSnackbar(snackbarId) }}>
                                     Cancel
                                 </button>
                             </>,
@@ -186,35 +170,65 @@ export default function Onboard() {
                             Description
                         </label>
                         <div className="mt-2">
-                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
+                            <div className="flex rounded-2xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
                                 {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">workcation.com/</span> */}
                                 <textarea
                                     id="description" required
                                     name="description" rows={6}
                                     placeholder={description}
                                     autoComplete="username"
-                                    className="block flex-1 w-full border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
+                                    className="block flex-1 w-full border-0 bg-transparent p-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
                                     disabled={!file}
                                 />
                             </div>
                         </div>
                         <label htmlFor="link" className="mt-8 block text-md mb-4 text-black">
-                            Link
+                            Link *
                         </label>
                         <div className="mt-2">
-                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
+                            <div className="flex rounded-2xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
                                 {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">workcation.com/</span> */}
                                 <input
                                     id="link" required
                                     name="link" placeholder='https://supercoolwebsite.com' type='text'
-                                    autoComplete="username"
-                                    className="block flex-1 w-full border-0 bg-transparent p-2 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
+                                    className="block flex-1 w-full border-0 bg-transparent p-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
                                     disabled={!file}
                                 />
                             </div>
                         </div>
+
+                        <label htmlFor="link" className="mt-8 block text-md mb-4 text-black">
+                            Location *
+                        </label>
+                        <div className="mt-2">
+                            <div className="flex rounded-2xl shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-black">
+                                {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">workcation.com/</span> */}
+                                <input
+                                    id="location" required
+                                    name="location" placeholder='G&T Auditorium' value={(location && location !== 'loading') ? location : ''} type='text'
+                                    className="block flex-1 w-full border-0 bg-transparent p-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
+                                    disabled={true}
+                                />
+
+                                <button disabled={!file} onClick={() => {
+                                    if (navigator.geolocation) {
+                                        setLocation('loading');
+                                        navigator.geolocation.getCurrentPosition((position) => {
+                                            setLocation(position.coords.latitude + ', ' + position.coords.longitude)
+                                        })
+                                    }
+                                }} className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl text-neutral-950 px-4 pt-2 font-medium -text-neutral-200 transition hover:scale-110">
+                                    <span>{location === 'loading' ? 'Loading...' : 'Fetch'}</span>
+                                    {/* <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
+                                        <div className="relative h-full w-8 bg-white/20" />
+                                    </div> */}
+                                </button>
+
+                            </div>
+                        </div>
+
                         <div className="my-4">
-                            <div className="flex mt-4 rounded-md -shadow-sm ring-1-ring-inset -ring-gray-300 -focus-within:ring-2 -focus-within:ring-inset -focus-within:ring-black">
+                            <div className="flex mt-4 rounded-2xl -shadow-sm ring-1-ring-inset -ring-gray-300 -focus-within:ring-2 -focus-within:ring-inset -focus-within:ring-black">
                                 <span className="flex select-none items-center -pl-3 text-black sm:text-md">Posting as{' '}<strong className='ml-2'>@{user ? user?.email?.split('@')[0] : '...'}</strong></span>
                             </div>
                         </div>
@@ -225,7 +239,7 @@ export default function Onboard() {
                     </p>
 
                     <div className="mt-6 border-t md:lg:border-none flex fixed left-0 bottom-0 w-screen px-4 py-2 md:lg:relative md:lg:w-full md:lg:p-0 bg-white items-center justify-end gap-x-6">
-                        <button onClick={removeFile} className="group group-hover:border relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md px-6 font-medium text-neutral-950 duration-500">
+                        <button onClick={removeFile} className="group group-hover:border relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl px-6 font-medium text-neutral-950 duration-500">
                             <div className="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0">
                                 Cancel
                             </div>
@@ -234,7 +248,7 @@ export default function Onboard() {
                             </div>
                         </button>
                         <button disabled={!file}
-                            type="submit" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-neutral-950 px-6 font-medium text-neutral-200 transition hover:scale-110">
+                            type="submit" className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl bg-neutral-950 px-6 font-medium text-neutral-200 transition hover:scale-110">
                             <span>Post It!</span>
                             <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
                                 <div className="relative h-full w-8 bg-white/20" />
