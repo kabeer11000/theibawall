@@ -1,7 +1,5 @@
-import Image from '@/components/Image';
 import { auth } from '@/firebase-config';
-import { ArrowLeftIcon, ArrowUpCircleIcon, ClockIcon, FaceFrownIcon, UserCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
-import { PhotoIcon } from '@heroicons/react/24/solid';
+import { ArrowLeftIcon, ArrowUpCircleIcon, ClockIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import React, { useMemo, useState } from 'react';
@@ -30,22 +28,26 @@ const descriptions = [
 ];
 
 export default function Onboard() {
-    const [file, setFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
+    const [file, setFile] = useState<null | File>(null);
+    const [imagePreview, setImagePreview] = useState<null | string>(null);
+    const [isDragging, setIsDragging] = useState<boolean>(false);
     const [user] = useAuthState(auth);
     const router = useRouter();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    const handleFileChange = (e) => {
-        const uploadedFile = e.target.files[0];
+
+    type DragEvent = React.DragEvent<HTMLDivElement>;
+    type FileChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+    const handleFileChange = (e: FileChangeEvent): void => {
+        const uploadedFile = e.target?.files?.[0];
         if (uploadedFile) {
             setFile(uploadedFile);
             setImagePreview(URL.createObjectURL(uploadedFile));
         }
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: DragEvent): void => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
@@ -56,23 +58,24 @@ export default function Onboard() {
         }
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: DragEvent): void => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(true);
     };
 
-    const handleDragLeave = () => {
+    const handleDragLeave = (): void => {
         setIsDragging(false);
     };
 
-    const removeFile = () => {
+    const removeFile = (): void => {
         if (imagePreview) URL.revokeObjectURL(imagePreview);
         setFile(null);
         setImagePreview(null);
     };
+
     // Use useMemo to memoize the random description
-    const description = useMemo(() => {
+    const description = useMemo<string>(() => {
         const randomIndex = Math.floor(Math.random() * descriptions.length);
         return descriptions[randomIndex];
     }, []); // Empty dependency array ensures this is calculated only once
@@ -123,56 +126,53 @@ export default function Onboard() {
 
                 {/* File Upload Section */}
                 <div className="lg:col-span-4 absolute-mb-[60vh] md:lg:static">
-                    {/* <label htmlFor="cover-photo" className="block text-md font-medium text-gray-900">
-                        Cover photo
-                    </label> */}
                     <div className='mx-auto flex w-full justify-center md:lg:block'>
-                    <div
-                        className={`relative hover:shadow-lg transform transition-all hover:duration-400 duration-400 animate-squeezeInterval- -[squeeze_0.5s_ease-in-out_infinite_5s] -delay-[5s] mt-2 flex overflow-hidden justify-center rounded-xl border ${isDragging ? 'border-indigo-600 bg-indigo-100' : 'border-gray-300 bg-neutral-100'} transition-colors`}
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                    >
-                        {imagePreview ? (
-                            <div className="mx-auto">
-                                <div className="rounded-lg">
-                                    <img src={imagePreview} className="max-h-[40vh] md:lg:max-h-[60vh] h-full w-auto md:lg:h-auto md:lg:w-full bg-blend-darken" alt="Preview" />
-                                </div>
-                                <div className="absolute top-0 right-0 p-4 flex justify-end">
-                                    <button onClick={removeFile} className="relative h-8 overflow-hidden rounded-full px-5-py-2.5 text-neutral-500 transition-all duration-300 hover:bg-red-800 hover:text-white hover:ring-2 hover:ring-red-800 hover:ring-offset-2">
-                                        <span className="relative">
-                                            <XCircleIcon
-                                                className="w-8 h-8" />
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="h-[30rem] sticky-top-0 grid px-4 pt-8 w-full text-center">
-                                <div className="mt-[6rem]">
-                                    <ArrowUpCircleIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
-                                    <div className="mt-4 text-neutral-600">
-                                        <label
-                                            htmlFor="file-upload"
-                                            className="relative text-md underline font-bold cursor-pointer"
-                                        >
-                                            <span>Upload a file</span>
-                                            <input
-                                                id="file-upload"
-                                                name="file-upload"
-                                                type="file" accept='image/*'
-                                                className="sr-only"
-                                                onChange={handleFileChange}
-                                            />
-                                        </label>
-                                        <p className="inline text-md"> or drag and drop</p>
+                        <div
+                            className={`relative hover:shadow-lg transform transition-all hover:duration-400 duration-400 animate-squeezeInterval- -[squeeze_0.5s_ease-in-out_infinite_5s] -delay-[5s] mt-2 flex overflow-hidden justify-center rounded-xl border ${isDragging ? 'border-indigo-600 bg-indigo-100' : 'border-gray-300 bg-neutral-100'} transition-colors`}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                        >
+                            {imagePreview ? (
+                                <div className="mx-auto">
+                                    <div className="rounded-lg">
+                                        <img src={imagePreview} className="max-h-[40vh] md:lg:max-h-[60vh] h-full w-auto md:lg:h-auto md:lg:w-full bg-blend-darken" alt="Preview" />
+                                    </div>
+                                    <div className="absolute top-0 right-0 p-4 flex justify-end">
+                                        <button onClick={removeFile} className="relative h-8 overflow-hidden rounded-full px-5-py-2.5 text-neutral-500 transition-all duration-300 hover:bg-red-800 hover:text-white hover:ring-2 hover:ring-red-800 hover:ring-offset-2">
+                                            <span className="relative">
+                                                <XCircleIcon
+                                                    className="w-8 h-8" />
+                                            </span>
+                                        </button>
                                     </div>
                                 </div>
-                                <p className="text-sm text-neutral-400 mt-[12rem] border-t pt-4">We recommend PNG, JPG, GIF up to 10MB</p>
-                            </div>
-                        )}
+                            ) : (
+                                <div className="h-[30rem] sticky-top-0 grid px-4 pt-8 w-full text-center">
+                                    <div className="mt-[6rem]">
+                                        <ArrowUpCircleIcon aria-hidden="true" className="mx-auto h-12 w-12 text-gray-300" />
+                                        <div className="mt-4 text-neutral-600">
+                                            <label
+                                                htmlFor="file-upload"
+                                                className="relative text-md underline font-bold cursor-pointer"
+                                            >
+                                                <span>Upload a file</span>
+                                                <input
+                                                    id="file-upload"
+                                                    name="file-upload"
+                                                    type="file" accept='image/*'
+                                                    className="sr-only"
+                                                    onChange={handleFileChange}
+                                                />
+                                            </label>
+                                            <p className="inline text-md"> or drag and drop</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-neutral-400 mt-[12rem] border-t pt-4">We recommend PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 {/* Form Section */}
@@ -221,7 +221,7 @@ export default function Onboard() {
                     </div>
 
                     <p className="mt-4 text-md flex content-center align-middle justify-start mb-[5rem] text-black">
-                        <ClockIcon className='w-8 h-8 mr-4' /> <span>Photo's people add to The Wall stay up for 20 hours.</span>
+                        <ClockIcon className='w-8 h-8 mr-4' /> <span>Photo&apos;s people add to The Wall stay up for 20 hours.</span>
                     </p>
 
                     <div className="mt-6 border-t md:lg:border-none flex fixed left-0 bottom-0 w-screen px-4 py-2 md:lg:relative md:lg:w-full md:lg:p-0 bg-white items-center justify-end gap-x-6">
