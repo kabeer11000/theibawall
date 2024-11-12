@@ -9,6 +9,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 export default function Onboard() {
     const [file, setFile] = useState<null | File>(null);
     const [imagePreview, setImagePreview] = useState<null | string>(null);
+    const [locationName, setLocationName] = useState<null | string>(null);
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [user] = useAuthState(auth);
     const router = useRouter();
@@ -59,14 +60,23 @@ export default function Onboard() {
         const randomIndex = Math.floor(Math.random() * descriptions.length);
         return descriptions[randomIndex];
     }, []); // Empty dependency array ensures this is calculated only once
+    const handleLocation = () => {
+        // let options;
+        // if (window?.chrome) //set this var looking for Chrome un user-agent header
+        //     options = { enableHighAccuracy: false, maximumAge: 15000, timeout: 30000 };
+        // else
+        //     options = { maximumAge: Infinity, timeout: 0 };
+        if (navigator.geolocation) navigator.geolocation.getCurrentPosition(async (position) => {
+            setLocation(position.coords.latitude + ', ' + position.coords.longitude);
+            setLocationName((await (await fetch(`https://docs.cloud.kabeers.network/tests/wall/location.php?lat=${position.coords.latitude}&long=${position.coords.longitude}&cache=${Math.random()}`)).json()).data.placeName);
+        }, console.log, window.chrome ? { enableHighAccuracy: true, maximumAge: 15000, timeout: 30000 } : { enableHighAccuracy: true, maximumAge: Infinity, timeout: 0 })
+    }
     useEffect(() => {
-        if (navigator.geolocation) navigator.geolocation.getCurrentPosition((position) => {
-            setLocation(position.coords.latitude + ', ' + position.coords.longitude)
-        })
-    }, [])
+        handleLocation();
+    }, [file]);
     return (
-        <div className="container mx-auto py-0">
-            <div className="top-0 z-50 border-b md:lg:border-none sticky mx-auto w-full max-w-6xl bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
+        <div className="overflow-hidden relative container mx-auto py-0">
+            <div className="top-0 z-50 border-b md:lg:border-none sticky mx-auto w-full max-w-6xl -bg-white px-4 py-2 md:lg:py-10 rounded-lg shadow-md- flex align-middle content-center">
                 <button onClick={() => {
                     if (imagePreview) {
                         enqueueSnackbar('What should we do with the photo attached?', {
@@ -106,7 +116,71 @@ export default function Onboard() {
                 </div> */}
                 <div className='pt-2 ml-8'><p className='text-lg'>Add to The Wall</p></div>
             </div>
-            <div className="mx-auto mt-4 max-w-6xl bg-white p-4 py-0 rounded-lg shadow-md- grid  gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-12">
+            <form action={async (formData) => {
+                // Ensure file exists
+                if (!file) {
+                    console.error("No file provided for upload.");
+                    return;
+                }
+
+                formData.append('file', file);
+                formData.append('location-coord', location || '');  // Fallback to empty string if location is null or undefined
+                formData.append('location', locationName || '');    // Fallback to empty string if locationName is null or undefined
+
+                // Retrieve user token
+                let userToken;
+                try {
+                    userToken = (await user?.getIdToken())?.toString();
+                    if (!userToken) {
+                        console.error("Failed to retrieve user token.");
+                        return;
+                    }
+                    formData.append('token', userToken);
+                } catch (error) {
+                    console.error("Error while retrieving user token:", error);
+                    return;
+                }
+
+                // Get API token from server
+                let apiToken;
+                try {
+                    const response = await fetch(`/api/get-token?user=${encodeURIComponent(user?.email?.split('@')[0] || '')}`);
+                    if (!response.ok) {
+                        console.error("Failed to fetch API token:", response.status, response.statusText);
+                        return;
+                    }
+                    apiToken = await response.text();
+                } catch (error) {
+                    console.error("Error fetching API token:", error);
+                    return;
+                }
+
+                // Verify API token exists
+                if (!apiToken) {
+                    console.error("API token is empty or undefined.");
+                    return;
+                }
+
+                // Upload file to API
+                try {
+                    const uploadResponse = await fetch(`https://docs.cloud.kabeers.network/tests/wall/api.php?token=${apiToken}&is-live=false&cache=${Math.random()}`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!uploadResponse.ok) {
+                        console.error("File upload failed:", uploadResponse.status, uploadResponse.statusText);
+                        return;
+                    }
+
+                    // Optionally, handle response data
+                    const result = await uploadResponse.json();
+                    console.log("File uploaded successfully:", result);
+
+                } catch (error) {
+                    console.error("Error during file upload:", error);
+                }
+            }} method='post' encType="multipart/form-data" className="mx-auto mt-4 max-w-6xl bg-white- p-4 py-0 rounded-lg shadow-md- grid  gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-12">
 
                 {/* File Upload Section */}
                 <div className="lg:col-span-4 absolute-mb-[60vh] md:lg:static">
@@ -141,7 +215,7 @@ export default function Onboard() {
                                                 className="relative text-md underline font-bold cursor-pointer"
                                             >
                                                 <span>Upload a file</span>
-                                                <input
+                                                <input required
                                                     id="file-upload"
                                                     name="file-upload"
                                                     type="file" accept='image/*'
@@ -161,7 +235,7 @@ export default function Onboard() {
 
                 {/* Form Section */}
                 <div className="lg:col-span-1 border-t-md:lg:border-none"></div>
-                <div className={`pb-4 bg-white rounded-lg-shadow-w-screen-h-screen lg:col-span-6 ${file ? 'opacity-100' : 'opacity-30 -pointer-events-none cursor-not-allowed'}`}>
+                <div className={`pb-4 -bg-white  rounded-lg-shadow-w-screen-h-screen lg:col-span-6 ${file ? 'opacity-100' : 'opacity-30 pointer-events-none cursor-not-allowed'}`}>
                     {/* <div className='absolute top-50 mx-auto'>
                         Locked
                     </div> */}
@@ -176,7 +250,6 @@ export default function Onboard() {
                                     id="description" required
                                     name="description" rows={6}
                                     placeholder={description}
-                                    autoComplete="username"
                                     className="block flex-1 w-full border-0 bg-transparent p-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
                                     disabled={!file}
                                 />
@@ -205,26 +278,19 @@ export default function Onboard() {
                                 {/* <span className="flex select-none items-center pl-3 text-gray-500 sm:text-md">workcation.com/</span> */}
                                 <input
                                     id="location" required
-                                    name="location" placeholder='G&T Auditorium' value={(location && location !== 'loading') ? location : ''} type='text'
+                                    name="location" placeholder='G&T Auditorium' value={(locationName && location !== 'loading') ? locationName : ''} type='text'
                                     className="block flex-1 w-full border-0 bg-transparent p-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-md"
                                     disabled={true}
                                 />
 
-                                <button disabled={!file} onClick={() => {
-                                    if (navigator.geolocation) {
-                                        setLocation('loading');
-                                        navigator.geolocation.getCurrentPosition((position) => {
-                                            setLocation(position.coords.latitude + ', ' + position.coords.longitude)
-                                        })
-                                    }
-                                }} className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl text-neutral-950 px-4 pt-2 font-medium -text-neutral-200 transition hover:scale-110">
+                                {/* <button disabled={!file} onClick={handleLocation} className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl text-neutral-950 px-4 pt-2 font-medium -text-neutral-200 transition hover:scale-110">
                                     <span>{location === 'loading' ? 'Loading...' : 'Fetch'}</span>
-                                    {/* <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
-                                        <div className="relative h-full w-8 bg-white/20" />
-                                    </div> */}
-                                </button>
+                                </button> */}
 
                             </div>
+                        </div>
+                        <div className='none hidden'>
+                            <input type='text' name='user' required value={user ? user?.email?.split('@')[0] : ''} />
                         </div>
 
                         <div className="my-4">
@@ -238,7 +304,7 @@ export default function Onboard() {
                         <ClockIcon className='w-8 h-8 mr-4' /> <span>Photo&apos;s people add to The Wall stay up for 20 hours.</span>
                     </p>
 
-                    <div className="mt-6 border-t md:lg:border-none flex fixed left-0 bottom-0 w-screen px-4 py-2 md:lg:relative md:lg:w-full md:lg:p-0 bg-white items-center justify-end gap-x-6">
+                    <div className="mt-6 border-t md:lg:border-none flex fixed left-0 bottom-0 w-screen px-4 py-2 md:lg:relative md:lg:w-full md:lg:p-0 bg-white md:lg:bg-transparent items-center justify-end gap-x-6">
                         <button onClick={removeFile} className="group group-hover:border relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl px-6 font-medium text-neutral-950 duration-500">
                             <div className="translate-x-0 opacity-100 transition group-hover:-translate-x-[150%] group-hover:opacity-0">
                                 Cancel
@@ -255,6 +321,13 @@ export default function Onboard() {
                             </div>
                         </button>
                     </div>
+                </div>
+            </form>
+            <div className='absolute -z-10 left-[5rem] bottom-[5rem]'>
+                <div className='w-screen max-w-sm'>
+                    <svg width="658" height="721" viewBox="0 0 658 721" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M313.898 0.138454C417.937 0.31296 493.477 87.8141 556.938 170.257C618.576 250.331 671.906 342.239 653.752 441.645C634.738 545.766 559.193 629.515 464.451 676.703C368.025 724.729 252.828 739.006 157.518 688.801C65.5175 640.338 22.1754 537.143 4.86437 434.61C-11.075 340.201 14.3373 247.461 69.833 169.44C130.212 84.5528 209.728 -0.0362725 313.898 0.138454Z" fill="#F3F3F3" />
+                    </svg>
                 </div>
             </div>
         </div>
