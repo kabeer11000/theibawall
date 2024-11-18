@@ -186,7 +186,7 @@ export default function Onboard() {
                 <div className="lg:col-span-4 absolute-mb-[60vh] md:lg:static">
                     <div className='mx-auto flex w-full justify-center md:lg:block'>
                         <div
-                            className={`relative hover:shadow-lg transform transition-all hover:duration-400 duration-400 animate-squeezeInterval- -[squeeze_0.5s_ease-in-out_infinite_5s] -delay-[5s] mt-2 flex overflow-hidden justify-center rounded-xl border ${isDragging ? 'border-indigo-600 bg-indigo-100' : 'border-gray-300 bg-neutral-100'} transition-colors`}
+                            className={`relative md:lg:hover:shadow-lg transform transition-all hover:duration-400 duration-400 animate-squeezeInterval- -[squeeze_0.5s_ease-in-out_infinite_5s] -delay-[5s] mt-2 flex overflow-hidden justify-center rounded-xl border ${isDragging ? 'border-indigo-600 bg-indigo-100' : 'border-gray-300 bg-neutral-100'} transition-colors`}
                             onDrop={handleDrop}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}

@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ["localhost", "127.0.0.1", "docs.cloud.kabeers.network"],
+  },
+  experimental: {
+    optimizePackageImports: ["@chakra-ui/react"],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
